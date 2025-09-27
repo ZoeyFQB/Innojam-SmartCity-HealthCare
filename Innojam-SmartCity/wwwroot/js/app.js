@@ -102,8 +102,7 @@ function aggregateData(data) {
         testTypeCounts: {},
         locationCounts: {},
         familyHistoryCounts: { father: {}, mother: {}, siblings: {} },
-        transferCounts: { TransferIn: 0, TransferOut: 0, TransferOther: 0, NotTransferred: 0 },
-        monthlyCounts: {}
+        transferCounts: { TransferIn: 0, TransferOut: 0, TransferOther: 0, NotTransferred: 0 }
     };
 
     const currentHospital = "Cyberjaya Hospital";
@@ -140,13 +139,6 @@ function aggregateData(data) {
             else aggregatedData.transferCounts.TransferOther++;
         } else {
             aggregatedData.transferCounts.NotTransferred++;
-        }
-
-        // Monthly Report Count
-        const dateStr = d.reportDate || d.historicalLabReports?.[0]?.reportDate;
-        if (dateStr) {
-            const month = new Date(dateStr).toISOString().slice(0, 7); // YYYY-MM
-            aggregatedData.monthlyCounts[month] = (aggregatedData.monthlyCounts[month] || 0) + 1;
         }
     });
 
@@ -234,27 +226,6 @@ function renderCharts(aggregatedData) {
         options: {
             plugins: { title: { display: true, text: 'Hospital Transfer Overview' } },
             responsive: true,
-            scales: { y: { beginAtZero: true } }
-        }
-    });
-
-    // --- Chart 5: Monthly Report Distribution (Line)
-    const ctx5 = document.getElementById("monthlyReportChart").getContext("2d");
-    new Chart(ctx5, {
-        type: "line",
-        data: {
-            labels: Object.keys(aggregatedData.monthlyCounts),
-            datasets: [{
-                label: "Reports per Month",
-                data: Object.values(aggregatedData.monthlyCounts),
-                borderColor: "#ff5733",
-                fill: false,
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { title: { display: true, text: 'Monthly Report Distribution' } },
             scales: { y: { beginAtZero: true } }
         }
     });

@@ -16,20 +16,44 @@
     <h2>Patient Analytics Dashboard</h2>
 @*     <button id="refreshDataBtn">Refresh Data & Graphs</button> *@
 
-    <div id="graphsContainer">
-        <canvas id="labTestTypeChart" width="400" height="200"></canvas>
-        <canvas id="labLocationChart" width="400" height="200"></canvas>
-        <canvas id="familyHistoryChart" width="400" height="200"></canvas>
-        <canvas id="transferChart" width="400" height="200"></canvas>
-        <canvas id="monthlyReportChart" width="400" height="200"></canvas>
+    <div id="graphsContainer" class="row">
+        <div class="col-md-6">
+            <canvas id="labTestTypeChart" width="400" height="200"></canvas>
+            <div class="text-center mb-3">
+                <button id="btnLabTestAnalysis" class="btn btn-outline-primary btn-sm">Generate Summary</button>
+            </div>
+            <div id="analysisLabTest" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 5px; max-height: 250px; overflow-y: auto; display: none;"></div>
+        </div>
+        <div class="col-md-6">
+            <canvas id="labLocationChart" width="400" height="200"></canvas>
+            <div class="text-center mb-3">
+                <button id="btnLabLocationAnalysis" class="btn btn-outline-primary btn-sm">Generate Summary</button>
+            </div>
+            <div id="analysisLabLocation" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 5px; max-height: 250px; overflow-y: auto; display: none;"></div>
+        </div>
+        <div class="col-md-6">
+            <canvas id="familyHistoryChart" width="400" height="200"></canvas>
+            <div class="text-center mb-3">
+                <button id="btnFamilyHistoryAnalysis" class="btn btn-outline-primary btn-sm">Generate Summary</button>
+            </div>
+            <div id="analysisFamilyHistory" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 5px; max-height: 250px; overflow-y: auto; display: none;"></div>
+        </div>
+        <div class="col-md-6">
+            <canvas id="transferChart" width="400" height="200"></canvas>
+            <div class="text-center mb-3">
+                <button id="btnTransferAnalysis" class="btn btn-outline-primary btn-sm">Generate Summary</button>
+            </div>
+            <div id="analysisTransfer" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 5px; max-height: 250px; overflow-y: auto; display: none;"></div>
+        </div>
     </div>
 
-    <h3 style="margin-top: 40px;">AI Analysis</h3>
-    <p style="font-style: italic; color: #666; max-width: 600px;">
-        Click "Generate AI Analysis" to get a summarized overview, trends, and management recommendations based on the patient data.
-    </p>
-    <button id="generateAIAnalysisBtn" style="padding: 10px 15px; margin-bottom: 15px; cursor: pointer;">Generate AI Analysis</button>
-
+    <div class="mb-3">
+        <h3 style="margin-top: 40px;">AI Insights</h3>
+        <p style="font-style: italic; color: #666;">
+            Click "Generate AI Analysis" to get a summarized overview, trends, and management recommendations based on the patient data.
+        </p>
+        <button id="generateAIAnalysisBtn" class="btn btn-outline-primary">Generate AI Analysis</button>
+    </div>
     <div id="aiAnalysisBox" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 5px; min-height: 100px; overflow-y: auto;"></div>
     <div id="analysisMessage" style="color: red; margin-top: 10px;"></div>
 </div>
