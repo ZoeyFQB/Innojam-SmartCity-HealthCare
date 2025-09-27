@@ -592,7 +592,7 @@ document.getElementById("generateSmartCityBtn").onclick = async () => {
 
     btn.disabled = true;
     box.textContent = "Analyzing smart city health data...";
-    actionsDiv.innerHTML = "";
+    //actionsDiv.innerHTML = "";
     actionsDiv.style.display = "none";
 
     try {
@@ -675,6 +675,7 @@ Rules:
         // 5. Render per-patient trigger buttons
         // ======================
         actionsDiv.style.display = "block";
+        var tableData = [];
 
         allReports.forEach(patient => {
             const triggers = [];
@@ -682,38 +683,82 @@ Rules:
             // Predictive Health Alerts
             if (patient.chronicConditions?.includes("Asthma")) {
                 triggers.push({ label: "Send SMS Alert", reason: "Asthma + AQI risk", icon: "✅" });
+                tableData.push({
+                    patientName: patient.name,
+                    action: "Send SMS Alert",
+                    reason: "Asthma + AQI risk",
+                    icon: "✅"
+                });
             }
 
             // Emergency Routing
             const hasStroke = patient.historicalLabReports?.some(
                 r => r.testType?.includes("Stroke") && r.testResult === "Positive"
             );
-            if (hasStroke) triggers.push({ label: "Trigger Emergency Route", reason: "Stroke history", icon: "🚑" });
+            if (hasStroke) {
+                triggers.push({ label: "Trigger Emergency Route", reason: "Stroke history", icon: "🚑" });
+
+                tableData.push({
+                    patientName: patient.name,
+                    action: "Trigger Emergency Route",
+                    reason: "Stroke history",
+                    icon: "🚑"
+                });
+            }
 
             // Family Risk Propagation
             const fam = patient.familyMedicalHistory || {};
             if (fam.siblings === "Heart Disease" || fam.father === "Heart Disease") {
                 triggers.push({ label: "Send Preventive Invite", reason: "Family heart disease risk", icon: "📩" });
-            }
-
-            if (triggers.length > 0) {
-                const pDiv = document.createElement("div");
-                pDiv.className = "patient-action-card";
-                pDiv.innerHTML = `<h4>${patient.name} (${patient.nric})</h4>`;
-
-                triggers.forEach(trigger => {
-                    const btn = document.createElement("button");
-                    btn.textContent = trigger.label;
-                    btn.onclick = () => {
-                        // Replace alert with actual API or action trigger
-                        alert(`${trigger.icon} ${trigger.label} triggered for ${patient.name} (Reason: ${trigger.reason})`);
-                    };
-                    pDiv.appendChild(btn);
+                tableData.push({
+                    patientName: patient.name,
+                    action: "Send Preventive Invite",
+                    reason: "Family heart disease risk",
+                    icon: "📩"
                 });
-
-                actionsDiv.appendChild(pDiv);
             }
+
+            //if (triggers.length > 0) {
+            //    const pDiv = document.createElement("div");
+            //    pDiv.className = "patient-action-card";
+            //    pDiv.innerHTML = `<h4>${patient.name} (${patient.nric})</h4>`;
+
+            //    triggers.forEach(trigger => {
+            //        const btn = document.createElement("button");
+            //        btn.textContent = trigger.label;
+            //        btn.onclick = () => {
+            //            // Replace alert with actual API or action trigger
+            //            alert(`${trigger.icon} ${trigger.label} triggered for ${patient.name} (Reason: ${trigger.reason})`);
+            //        };
+            //        pDiv.appendChild(btn);
+            //    });
+
+            //    actionsDiv.appendChild(pDiv);
+            //}
+            
         });
+
+        var filteredTable = tableData.filter(
+            (value, index, self) =>
+                index === self.findIndex(
+                    (t) => t.patientName === value.patientName && t.reason === value.reason
+                )
+        );
+        if (filteredTable.length > 0) {
+            $('#patientTable').DataTable({
+                data: filteredTable,
+                columns: [
+                    { data: 'patientName', title: "Patient Name" },
+                    { data: 'reason', title: "Possible Disease" },
+                    {
+                        data: null, title: "Action", render: function (data, type, row) {
+                            return `<button class="btn btn-primary" onclick="alert('${row.action} is triggered due to reason: ${row.reason}');">${row.icon} ${row.action}</button>`;
+                        }
+                    }
+                ]
+            });
+            $('#patientTable').show();
+        }
 
     } catch (err) {
         box.textContent = `Error generating Smart City analysis: ${err.message}`;
@@ -721,5 +766,4 @@ Rules:
         btn.disabled = false;
     }
 };
-
 

@@ -83,14 +83,24 @@
 <!-- Smart City Analytics Tab -->
 <div id="tabSmartCity" class="tabContent">
     <h2>Health Alerts & Actions</h2>
-    <p style="font-style: italic; color: #666; max-width: 600px;">
+    <p style="font-style: italic; color: #666;">
         Insights from patient data are summarized below. Admin can also trigger actions (alerts, routes, invites).
     </p>
     <button id="generateSmartCityBtn" style="padding: 10px 15px; cursor: pointer;">Generate Smart City Analysis</button>
 
-    <div id="smartCityBox" class="analysis-box">Waiting for analysis...</div>
+    <div id="smartCityBox" class="analysis-box mb-3">Waiting for analysis...</div>
 
-    <div id="smartCityActions"></div>
+    <div id="smartCityActions">
+        <table id="patientTable" class="table table-responsive" style="width:100%; display:none;">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 </div>
 
 
@@ -101,6 +111,8 @@
 </script>
 
 @section Scripts{
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.3.4/b-3.2.5/b-html5-3.2.5/b-print-3.2.5/fh-4.0.3/r-3.0.6/sc-2.4.3/datatables.min.css" rel="stylesheet" integrity="sha384-QqXLMZy/L3JyB80RBJ6TrmQSNXgPKie4cv0VKRTL9yFWUf+yxR/L5e1BU0M/HLm8" crossorigin="anonymous">
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.3.4/b-3.2.5/b-html5-3.2.5/b-print-3.2.5/fh-4.0.3/r-3.0.6/sc-2.4.3/datatables.min.js" integrity="sha384-135C0hAYleWzaU2ws28A2D0Psug/pYNMTSoAGWwTuWKNCMJtjbKy0nt4hKDten3c" crossorigin="anonymous"></script>
     <script type="module" src="~/js/app.js"></script>
     <script type="module" src="~/js/ai.js"></script>
 }
