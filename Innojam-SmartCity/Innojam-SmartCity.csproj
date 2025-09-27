@@ -7,4 +7,11 @@
     <RootNamespace>Innojam_SmartCity</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\js\ai.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -13,7 +13,7 @@
 <!-- Dashboard Tab -->
 <div id="tabViewData" class="tabContent activeTab">
     <h2>Patient Analytics Dashboard</h2>
-    <button id="refreshDataBtn">Refresh Data & Graphs</button>
+@*     <button id="refreshDataBtn">Refresh Data & Graphs</button> *@
 
     <div id="graphsContainer">
         <canvas id="labTestTypeChart" width="400" height="200"></canvas>
@@ -60,5 +60,6 @@
 </script>
 
 @section Scripts{
-    <script type="module" src="~/js/app.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/app.js"></script>
+    <script type="module" src="~/js/ai.js"></script>
 }
