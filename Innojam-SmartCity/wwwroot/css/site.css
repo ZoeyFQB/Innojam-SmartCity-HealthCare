@@ -220,3 +220,82 @@ canvas {
     color: #666;
     font-size: 0.95em;
 }
+
+.patient-action-card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+    .patient-action-card h4 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .patient-action-card button {
+        margin-right: 10px;
+        margin-top: 5px;
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .patient-action-card button:hover {
+            opacity: 0.9;
+        }
+
+        .patient-action-card button:first-of-type {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .patient-action-card button:nth-of-type(2) {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .patient-action-card button:nth-of-type(3) {
+            background: #28a745;
+            color: #fff;
+        }
+
+.analysis-box {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+    .analysis-box table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .analysis-box th, .analysis-box td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    .analysis-box th {
+        background: #f5f5f5;
+        font-weight: bold;
+    }
+
+    .analysis-box tr:nth-child(even) {
+        background: #fafafa;
+    }
+

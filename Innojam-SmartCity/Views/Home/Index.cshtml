@@ -8,6 +8,7 @@
 <div class="tab-buttons">
     <button class="tabBtn active" data-target="tabViewData" id="btnViewData">Patient Analytics Dashboard</button>
     <button class="tabBtn" data-target="tabPatientList" id="btnPatientList">Patient List & Detail</button>
+    <button class="tabBtn" data-target="tabSmartCity" id="btnSmartCityList">Health Alerts & Actions</button>
 </div>
 
 <!-- Dashboard Tab -->
@@ -46,6 +47,7 @@
 
         <div id="patientSummaryButtons">
             <button id="btnSummarizeBackground">Summarize Patient Background</button>
+            <button id="btnDeviceData">Summarize Device Data</button>
             <button id="btnSummarizePrediction">Prediction</button>
             <button id="btnPreventIllness">Prevention Advice</button>
         </div>
@@ -53,6 +55,21 @@
         <div id="patientAIAnalysisBox" style="margin-top:10px; border:1px solid #ccc; padding:10px; background:#fff; min-height:150px; overflow-y:auto;"></div>
     </div>
 </div>
+
+<!-- Smart City Analytics Tab -->
+<div id="tabSmartCity" class="tabContent">
+    <h2>Health Alerts & Actions</h2>
+    <p style="font-style: italic; color: #666; max-width: 600px;">
+        Insights from patient data are summarized below. Admin can also trigger actions (alerts, routes, invites).
+    </p>
+    <button id="generateSmartCityBtn" style="padding: 10px 15px; cursor: pointer;">Generate Smart City Analysis</button>
+
+    <div id="smartCityBox" class="analysis-box">Waiting for analysis...</div>
+
+    <div id="smartCityActions"></div>
+</div>
+
+
 
 
 <script>

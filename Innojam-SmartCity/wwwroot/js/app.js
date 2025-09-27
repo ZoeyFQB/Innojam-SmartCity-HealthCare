@@ -346,7 +346,7 @@ async function loadPatientDetails(nric, name) {
 
 
 async function generateAIAnalysisWithGroq(prompt) {
-    const apiKey = "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";  // Your key here
+    const apiKey = API_KEY ;  // Your key here
     const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -357,6 +357,7 @@ async function generateAIAnalysisWithGroq(prompt) {
             model: 'openai/gpt-oss-20b',
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.5,
+            max_tokens: 800 
         })
     });
 
@@ -548,4 +549,206 @@ document.getElementById("generateAIAnalysisBtn").onclick = async () => {
         btn.disabled = false;
     }
 };
+
+
+// ============================
+// Simulate random device data
+// ============================
+function generateRandomDeviceData() {
+    const randomInRange = (min, max) => (Math.random() * (max - min) + min).toFixed(1);
+
+    return {
+        timestamp: new Date().toISOString(),
+        heartRate: Math.floor(randomInRange(60, 100)),       // bpm
+        bloodPressure: `${Math.floor(randomInRange(110, 140))}/${Math.floor(randomInRange(70, 90))}`, // mmHg
+        oxygenSaturation: Math.floor(randomInRange(95, 100)), // %
+        bodyTemperature: randomInRange(36.5, 37.5),          // °C
+        steps: Math.floor(randomInRange(0, 5000)),           // daily steps
+        sleepHours: randomInRange(4, 8)                      // hours
+    };
+}
+
+// Utility to format device data as text for AI
+function formatDeviceDataForAI(readings) {
+    return readings.map(r =>
+        `[${r.timestamp}] HR: ${r.heartRate} bpm | BP: ${r.bloodPressure} | SpO2: ${r.oxygenSaturation}% | Temp: ${r.bodyTemperature}°C | Steps: ${r.steps} | Sleep: ${r.sleepHours}h`
+    ).join("\n");
+}
+
+// ============================
+// Button click: Summarize Device Data
+// ============================
+document.getElementById("btnDeviceData").onclick = async () => {
+    const box = document.getElementById("patientAIAnalysisBox");
+    box.textContent = "Summarizing device data...";
+
+    // Generate 5 random device readings
+    const deviceReadings = Array.from({ length: 5 }, generateRandomDeviceData);
+    const formattedDeviceData = formatDeviceDataForAI(deviceReadings);
+
+    const prompt = `You are a medical AI assistant. Summarize the following patient device data in markdown.
+
+Patient: ${currentPatientName} (${currentPatientId})
+Device Readings:
+${formattedDeviceData}
+
+Include:
+- Key trends or abnormalities
+- Any urgent alerts
+- Suggestions for monitoring
+`;
+
+    try {
+        const result = await generateAIAnalysisWithGroq(prompt);
+        box.innerHTML = marked.parse(result);
+    } catch (err) {
+        box.textContent = "Error: " + err.message;
+    }
+};
+
+
+
+// ============================
+// Smart City Health AI Dashboard
+// - Aggregated AI Summary
+// - Per-Patient Trigger Actions
+// ============================
+
+document.getElementById("generateSmartCityBtn").onclick = async () => {
+    const box = document.getElementById("smartCityBox");
+    const actionsDiv = document.getElementById("smartCityActions");
+    const btn = document.getElementById("generateSmartCityBtn");
+
+    btn.disabled = true;
+    box.textContent = "Analyzing smart city health data...";
+    actionsDiv.innerHTML = "";
+    actionsDiv.style.display = "none";
+
+    try {
+        // ======================
+        // 1. Fetch patient reports
+        // ======================
+        const snapshot = await getDocs(collection(db, "patient_lab_reports"));
+        const allReports = [];
+        snapshot.forEach(doc => allReports.push(doc.data()));
+
+        // ======================
+        // 2. Aggregate patient data (to reduce AI token usage)
+        // ======================
+        const aggregated = {
+            chronicConditions: {},  // { condition: [patients] }
+            strokeCases: [],
+            familyHeartRisk: []
+        };
+
+        allReports.forEach(patient => {
+            // Chronic conditions
+            patient.chronicConditions?.forEach(cond => {
+                if (!aggregated.chronicConditions[cond]) aggregated.chronicConditions[cond] = [];
+                aggregated.chronicConditions[cond].push({ name: patient.name, nric: patient.nric });
+            });
+
+            // Stroke cases
+            const hasStroke = patient.historicalLabReports?.some(
+                r => r.testType?.includes("Stroke") && r.testResult === "Positive"
+            );
+            if (hasStroke) aggregated.strokeCases.push({ name: patient.name, nric: patient.nric });
+
+            // Family heart risk
+            const fam = patient.familyMedicalHistory || {};
+            if (fam.siblings === "Heart Disease" || fam.father === "Heart Disease") {
+                aggregated.familyHeartRisk.push({ name: patient.name, nric: patient.nric });
+            }
+        });
+
+        // ======================
+        // 3. Utility: cap long lists
+        // ======================
+        const capList = (arr, max = 5) => {
+            return arr.length <= max ? arr : [...arr.slice(0, max), { note: `+${arr.length - max} more` }];
+        };
+
+        Object.keys(aggregated.chronicConditions).forEach(cond => {
+            aggregated.chronicConditions[cond] = capList(aggregated.chronicConditions[cond]);
+        });
+        aggregated.strokeCases = capList(aggregated.strokeCases);
+        aggregated.familyHeartRisk = capList(aggregated.familyHeartRisk);
+
+        // ======================
+        // 4. AI Summary Prompt
+        // ======================
+        const prompt = `
+You are a Smart City Health AI. Analyze aggregated patient data and summarize insights
+across 5 dimensions.
+
+Aggregated data (JSON):
+${JSON.stringify(aggregated, null, 2)}
+
+Provide output as a Markdown table with these columns:
+Dimension | Patient(s) | Risk/Reason | Suggested Action
+
+Rules:
+- Dimension must be one of:
+  Predictive Health Alerts,
+  Preventive Programs, Family Risk Propagation.
+- Patient(s): list sample names/NRIC or counts (e.g., "+12 more").
+- Risk/Reason: explain briefly why they were flagged.
+- Suggested Action: specific trigger (e.g., "Send SMS Alert", "Emergency Route").
+- Keep it concise and dashboard-friendly.
+`;
+
+        const result = await generateAIAnalysisWithGroq(prompt);
+        box.innerHTML = marked.parse(result);
+
+        // ======================
+        // 5. Render per-patient trigger buttons
+        // ======================
+        actionsDiv.style.display = "block";
+
+        allReports.forEach(patient => {
+            const triggers = [];
+
+            // Predictive Health Alerts
+            if (patient.chronicConditions?.includes("Asthma")) {
+                triggers.push({ label: "Send SMS Alert", reason: "Asthma + AQI risk", icon: "✅" });
+            }
+
+            // Emergency Routing
+            const hasStroke = patient.historicalLabReports?.some(
+                r => r.testType?.includes("Stroke") && r.testResult === "Positive"
+            );
+            if (hasStroke) triggers.push({ label: "Trigger Emergency Route", reason: "Stroke history", icon: "🚑" });
+
+            // Family Risk Propagation
+            const fam = patient.familyMedicalHistory || {};
+            if (fam.siblings === "Heart Disease" || fam.father === "Heart Disease") {
+                triggers.push({ label: "Send Preventive Invite", reason: "Family heart disease risk", icon: "📩" });
+            }
+
+            if (triggers.length > 0) {
+                const pDiv = document.createElement("div");
+                pDiv.className = "patient-action-card";
+                pDiv.innerHTML = `<h4>${patient.name} (${patient.nric})</h4>`;
+
+                triggers.forEach(trigger => {
+                    const btn = document.createElement("button");
+                    btn.textContent = trigger.label;
+                    btn.onclick = () => {
+                        // Replace alert with actual API or action trigger
+                        alert(`${trigger.icon} ${trigger.label} triggered for ${patient.name} (Reason: ${trigger.reason})`);
+                    };
+                    pDiv.appendChild(btn);
+                });
+
+                actionsDiv.appendChild(pDiv);
+            }
+        });
+
+    } catch (err) {
+        box.textContent = `Error generating Smart City analysis: ${err.message}`;
+    } finally {
+        btn.disabled = false;
+    }
+};
+
 

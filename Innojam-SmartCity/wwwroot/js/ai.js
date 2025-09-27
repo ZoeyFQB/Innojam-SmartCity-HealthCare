@@ -128,7 +128,7 @@ document.getElementById("generateAIAnalysisBtn").onclick = async () => {
 
 // AI Analysis API call
 async function generateAIAnalysisWithGroq(prompt) {
-    const apiKey = "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";  // Your key here
+    const apiKey = API_KEY;  // Your key here
     const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
